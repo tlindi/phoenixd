@@ -16,6 +16,7 @@ WORKDIR /phoenixd
 RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.detachedHead=false \
     https://github.com/ACINQ/phoenixd . \
     && test `git rev-parse HEAD` = ${PHOENIXD_COMMIT_HASH} || exit 1 \
+    && ./gradlew startScriptsForJvmPhoenix-cli \
     && ./gradlew jvmDistTar
 
 # JRE image to minimize final image size
