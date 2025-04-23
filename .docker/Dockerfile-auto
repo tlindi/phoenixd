@@ -45,6 +45,12 @@ RUN addgroup --system phoenix --gid 1000 \
     && adduser --system phoenix --ingroup phoenix --uid 1000 --home /phoenix
 USER phoenix
 
+# Unpack the release
+ARG CACHING
+RUN echo "Cache busting value: $CACHING" > /cache-bust.txt
+# Now the later layers that depend on /cache-bust.txt will be rebuilt when CACHING changes.
+# This enables us to see file extract always as it happens
+COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
 WORKDIR /phoenix
 
 # Now the later layers that depend on ./cache-bust.txt will be rebuilt when CACHING changes.
