@@ -7,6 +7,7 @@ on:
     - 'native-way' # Specific branch for the trigger
     paths:
       - '.docker/Dockerfile'
+      - '.docker/Dockerfile-auto'
       - './install_phoenixd.sh'
   workflow_dispatch:
 
@@ -15,16 +16,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          ref: native-way-v0.5.1-patched
+
       - name: Download mynode-phoenixd install script
         run: curl -o install_phoenixd.sh https://raw.githubusercontent.com/tlindi/mynode-phoenixd/native-way/scripts/install_phoenixd.sh
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Run customization script
-        run: |
-          chmod +x install_phoenixd.sh
-          ./install_phoenixd.sh
+#      - name: Run customization script
+#        run: |
+#          chmod +x install_phoenixd.sh
+#          ./install_phoenixd.sh
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
@@ -32,5 +38,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           context: ./.docker
-          file: .docker/Dockerfile          
+          file: .docker/Dockerfile-auto
           tags: tlindi/mynode-phoenixd:latest
