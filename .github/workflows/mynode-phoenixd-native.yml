@@ -47,5 +47,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: ./.docker
           file: .docker/Dockerfile-auto
-          tags: tlindi/mynode-phoenixd:latest
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mynode-phoenixd:latest
+          tags: tlindi/mynode-phoenixd:latest, tags: ${{ secrets.DOCKERHUB_USERNAME }}/mynode-phoenixd-auto:latest
