@@ -3,8 +3,8 @@ name: Phoenixd Docker for mynode-phoenixd
 on:
   push:
     branches:
-    - 'master'       # Default branch
-    - 'native-way' # Specific branch for the trigger
+    - 'master'                       # Default branch
+        - 'native-way-0.5.1-patched' # Specific branch for the trigger
     paths:
       - '.docker/Dockerfile'
       - '.docker/Dockerfile-auto'
