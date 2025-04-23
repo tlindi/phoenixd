@@ -55,8 +55,8 @@ RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
 # Try to find a build
 RUN find /phoenixd/build -name "*.zip" -print
 
-RUN addgroup --system phoenix --gid 1002 \
-    && adduser --system phoenix --ingroup phoenix --uid 1002 --home /phoenix
+RUN addgroup --system phoenix --gid 1000 \
+    && adduser --system phoenix --ingroup phoenix --uid 1000 --home /phoenix
 USER phoenix
 
 # Unpack the release
