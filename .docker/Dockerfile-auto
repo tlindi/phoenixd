@@ -28,7 +28,8 @@ RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.
     else \
         echo "Building JVM"; \
         ./gradlew jvmDistZip --info ; \
-    fi
+    fi \
+    && ./gradlew assembleDist --info
 
 # JRE image to minimize final image size
 FROM eclipse-temurin:21-jre-jammy AS final
@@ -49,6 +50,9 @@ WORKDIR /phoenix
 # This enables us to see eg file extract always as it happens
 ARG CACHING=$(head -c 16 /dev/urandom | sha256sum | cut -d' ' -f1)
 RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
+
+# Try to find a build
+RUN find /phoenixd/build -name "*.zip" -print
 
 # Unpack the release
 COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
