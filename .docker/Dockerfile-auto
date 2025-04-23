@@ -48,7 +48,7 @@ WORKDIR /phoenix
 # Now the later layers that depend on /cache-bust.txt will be rebuilt when CACHING changes.
 # This enables us to see file extract always as it happens
 ARG CACHING
-RUN echo "Cache busting value: $CACHING" > /cache-bust.txt
+RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
 
 # Unpack the release
 COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
