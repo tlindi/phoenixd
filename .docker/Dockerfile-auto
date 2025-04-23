@@ -35,7 +35,7 @@ RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.
 # JRE image to minimize final image size
 FROM eclipse-temurin:21-jre-jammy AS final
 
-	# Upgrade all packages and install dependencies
+# Upgrade all packages and install dependencies
 RUN apt-get update \
     && apt-get upgrade -y
 RUN apt-get install -y --no-install-recommends bash unzip
