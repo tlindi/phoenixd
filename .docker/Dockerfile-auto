@@ -20,16 +20,17 @@ RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.
     && test `git rev-parse HEAD` = ${PHOENIXD_COMMIT_HASH} || exit 1 \
     && ./gradlew startScriptsForJvmPhoenix-cli --refresh-dependencies --info \
     && ARCH=$(uname -m); \
-    echo "Architecture detected: $ARCH"; \
-    if [ "$ARCH" = "x86_64" ]; then \
-        ./gradlew linuxX64DistZip --info; \
-    elif [ "$ARCH" = "aarch64" ]; then \
-        ./gradlew linuxArm64DistZip --info ; \
-    else \
-        echo "Building JVM"; \
-        ./gradlew jvmDistZip --info ; \
-    fi \
-    && ./gradlew assembleDist --info
+    echo "Skipping architecture-specific tasks"; \
+    #echo "Architecture detected: $ARCH"; \
+    #if [ "$ARCH" = "x86_64" ]; then \
+    #    ./gradlew linuxX64DistZip --info; \
+    #elif [ "$ARCH" = "aarch64" ]; then \
+    #    ./gradlew linuxArm64DistZip --info ; \
+    #else \
+    #    echo "Building JVM"; \
+    #    ./gradlew jvmDistZip --info ; \
+    #fi
+    ./gradlew jvmDistZip --info
 
 # JRE image to minimize final image size
 FROM eclipse-temurin:21-jre-jammy AS final
