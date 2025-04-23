@@ -39,8 +39,8 @@ RUN apt-get update \
 RUN apt-get install -y --no-install-recommends bash unzip
 
 # Create a phoenix group and user
-RUN addgroup --system phoenix --gid 1002 \
-    && adduser --system phoenix --ingroup phoenix --uid 1002 --home /phoenix
+RUN addgroup --system phoenix --gid 1000 \
+    && adduser --system phoenix --ingroup phoenix --uid 1000 --home /phoenix
 USER phoenix
 
 WORKDIR /phoenix
