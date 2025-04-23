@@ -10,7 +10,18 @@ RUN apt-get update \
     && apt-get upgrade -y
 RUN apt-get install -y --no-install-recommends bash git \
     && apt clean
-
+# \
+# --- intentionally supposed to be empty lines here \
+# \
+# To prevent error: https://github.com/ACINQ/phoenixd/issues/170 \
+# built lightning-kmp \
+# see https://github.com/ACINQ/phoenixd/pull/169 \
+# \
+WORKDIR /lightning-kmp
+RUN git clone --recursive --single-branch --branch kotlin-2.1.20 \
+    https://github.com/ACINQ/lightning-kmp . \
+    && ./gradlew publishToMavenLocal --info
+	
 # Git pull phoenixd source at specified tag/branch and compile phoenixd
 WORKDIR /phoenixd
 RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.detachedHead=false \
