@@ -55,7 +55,17 @@ RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
 # Try to find a build
 RUN find /phoenixd/build -name "*.zip" -print
 
+RUN addgroup --system phoenix --gid 1002 \
+    && adduser --system phoenix --ingroup phoenix --uid 1002 --home /phoenix
+USER phoenix
+
 # Unpack the release
+ARG CACHING
+RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
+# Now the later layers that depend on /cache-bust.txt will be rebuilt when CACHING changes.
+# This enables us to see file extract always as it happens
+
+WORKDIR /phoenix
 COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
 #RUN tar --strip-components=1 -xvf phoenixd-*-jvm.tar
 #
