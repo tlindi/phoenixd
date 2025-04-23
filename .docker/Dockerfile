@@ -11,7 +11,7 @@ RUN apt-get update \
 RUN apt-get install -y --no-install-recommends bash git \
     && apt clean
 # \
-# --- intentionally supposed to be empty lines here \
+# --- intentionally supposed to be empty lines here --- \
 # \
 # To prevent error: https://github.com/ACINQ/phoenixd/issues/170 \
 # built lightning-kmp \
