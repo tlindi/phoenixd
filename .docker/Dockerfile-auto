@@ -45,9 +45,9 @@ USER phoenix
 
 WORKDIR /phoenix
 
-# Now the later layers that depend on /cache-bust.txt will be rebuilt when CACHING changes.
-# This enables us to see file extract always as it happens
-ARG CACHING
+# Now the later layers that depend on ./cache-bust.txt will be rebuilt when CACHING changes.
+# This enables us to see eg file extract always as it happens
+ARG CACHING=$(head -c 16 /dev/urandom | sha256sum | cut -d' ' -f1)
 RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
 
 # Unpack the release
@@ -55,12 +55,12 @@ COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd
 #RUN tar --strip-components=1 -xvf phoenixd-*-jvm.tar
 #
 #
-RUN echo user $(id) --option "$CACHING"
-RUN pwd --option "$CACHING"
-RUN mkdir -p /phoenix/bin --option "$CACHING"
-RUN ls -lasR --option "$CACHING"
-RUN unzip -jo phoenixd-*-jvm.zip *bin/phoenix* -d /phoenix/bin --option "$CACHING"
-RUN ls -lasR --option "$CACHING"
+RUN echo user $(id)
+RUN pwd
+RUN mkdir -p /phoenix/bin
+RUN ls -lasR
+RUN unzip -jo phoenixd-*-jvm.zip *bin/phoenix* -d /phoenix/bin
+RUN ls -lasR
 
 # Indicate that the container listens on port 9740
 EXPOSE 9740
