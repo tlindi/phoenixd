@@ -1,0 +1,34 @@
+name: Phoenixd Docker for mynode-phoenixd
+
+on:
+  push:
+    branches:
+    - 'master'       # Default branch
+    - 'native-way' # Specific branch for the trigger
+    paths:
+      - '.docker/Dockerfile'
+      - './install_phoenixd.sh'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download mynode-phoenixd install script
+        run: curl -o install_phoenixd.sh https://raw.githubusercontent.com/tlindi/mynode-phoenixd/native-way/scripts/install_phoenixd.sh
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run customization script
+        run: |
+          chmod +x install_phoenixd.sh
+          ./install_phoenixd.sh
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: tlindi/mynode-phoenixd:latest
