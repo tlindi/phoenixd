@@ -1,0 +1,73 @@
+# Use Ubuntu image for building for compatibility with macOS arm64 builds
+FROM eclipse-temurin:21-jdk-jammy AS build
+
+# Set necessary args and environment variables for building phoenixd
+ARG PHOENIXD_BRANCH=v0.5.1
+ARG PHOENIXD_COMMIT_HASH=ab9a026432a61d986d83c72df5619014414557be
+ARG CACHING=1
+RUN echo "Cache flag (CACHING): $CACHING"
+
+# Upgrade all packages and install dependencies
+RUN apt-get update \
+    && apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends bash git zip \
+    && apt clean
+
+# Git pull phoenixd source at specified tag/branch and compile phoenixd
+WORKDIR /phoenixd
+RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.detachedHead=false \
+    https://github.com/ACINQ/phoenixd . \
+    && test `git rev-parse HEAD` = ${PHOENIXD_COMMIT_HASH} || exit 1 \
+    && ./gradlew startScriptsForJvmPhoenix-cli --refresh-dependencies --info \
+    && ARCH=$(uname -m); \
+    echo "Skipping architecture-specific tasks"; \
+    #echo "Architecture detected: $ARCH"; \
+    #if [ "$ARCH" = "x86_64" ]; then \
+    #    ./gradlew linuxX64DistZip --info; \
+    #elif [ "$ARCH" = "aarch64" ]; then \
+    #    ./gradlew linuxArm64DistZip --info ; \
+    #else \
+    #    echo "Building JVM"; \
+    #    ./gradlew jvmDistZip --info ; \
+    #fi
+    ./gradlew jvmDistZip --info
+
+# JRE image to minimize final image size
+FROM eclipse-temurin:21-jre-jammy AS final
+
+# Upgrade all packages and install dependencies
+RUN apt-get update \
+    && apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends bash unzip
+
+# Create a phoenix group and user
+RUN addgroup --system phoenix --gid 1000 \
+    && adduser --system phoenix --ingroup phoenix --uid 1000 --home /phoenix
+USER phoenix
+
+WORKDIR /phoenix
+
+# Now the later layers that depend on ./cache-bust.txt will be rebuilt when CACHING changes.
+# This enables us to see eg file extract always as it happens
+ARG CACHING=$(head -c 16 /dev/urandom | sha256sum | cut -d' ' -f1)
+RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
+
+# Unpack the release
+COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
+#RUN tar --strip-components=1 -xvf phoenixd-*-jvm.tar
+#
+RUN echo user $(id)
+RUN pwd
+RUN mkdir -p /phoenix/bin
+RUN ls -lasR
+RUN unzip -jo phoenixd-*-jvm.zip *bin/phoenix* -d /phoenix/bin
+RUN ls -lasR
+
+# Indicate that the container listens on port 9740
+EXPOSE 9740
+
+# Expose default data directory as VOLUME
+VOLUME [ "/phoenix" ]
+
+# Run the daemon
+ENTRYPOINT ["/phoenix/bin/phoenixd", "--agree-to-terms-of-service", "--http-bind-ip", "0.0.0.0"]
