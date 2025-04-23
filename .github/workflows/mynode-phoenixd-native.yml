@@ -21,9 +21,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: native-way-v0.5.1-patched
+#          ref: master
 
- #     - name: Download mynode-phoenixd install script
- #       run: curl -o install_phoenixd.sh https://raw.githubusercontent.com/tlindi/mynode-phoenixd/native-way/scripts/install_phoenixd.sh
+#     - name: Download mynode-phoenixd install script
+#       run: curl -o install_phoenixd.sh https://raw.githubusercontent.com/tlindi/mynode-phoenixd/native-way/scripts/install_phoenixd.sh
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
