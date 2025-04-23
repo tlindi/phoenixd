@@ -19,8 +19,8 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          ref: master
-#          ref: native-way-v0.5.1-patched
+          ref: native-way-v0.5.1-patched
+#          ref: master
 
 #     - name: Download mynode-phoenixd install script
 #       run: curl -o install_phoenixd.sh https://raw.githubusercontent.com/tlindi/mynode-phoenixd/native-way/scripts/install_phoenixd.sh
