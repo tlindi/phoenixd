@@ -1,4 +1,5 @@
 # Use Ubuntu image for building for compatibility with macOS arm64 builds
+# dummyline for GitHub Action activation: Run #1
 FROM eclipse-temurin:21-jdk-jammy AS build
 
 # Set necessary args and environment variables for building phoenixd
@@ -18,7 +19,6 @@ WORKDIR /phoenixd
 RUN git clone --recursive --single-branch --branch ${PHOENIXD_BRANCH} -c advice.detachedHead=false \
     https://github.com/ACINQ/phoenixd . \
     && test `git rev-parse HEAD` = ${PHOENIXD_COMMIT_HASH} || exit 1 \
-    && ./gradlew startScriptsForJvmPhoenix-cli --refresh-dependencies --info \
     && ARCH=$(uname -m); \
     echo "Skipping architecture-specific tasks"; \
     #echo "Architecture detected: $ARCH"; \
@@ -47,7 +47,7 @@ USER phoenix
 
 # Unpack the release
 ARG CACHING
-RUN echo "Cache busting value: $CACHING" > /cache-bust.txt
+RUN echo "Cache busting value: $CACHING" > ./cache-bust.txt
 # Now the later layers that depend on /cache-bust.txt will be rebuilt when CACHING changes.
 # This enables us to see file extract always as it happens
 COPY --chown=phoenix:phoenix --from=build /phoenixd/build/distributions/phoenixd-*-jvm.zip .
